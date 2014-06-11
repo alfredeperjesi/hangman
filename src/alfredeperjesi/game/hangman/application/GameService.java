@@ -1,0 +1,42 @@
+package alfredeperjesi.game.hangman.application;
+
+import alfredeperjesi.game.hangman.domain.Game;
+import alfredeperjesi.game.hangman.domain.GameRepository;
+import com.google.common.base.Optional;
+import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class GameService {
+    private final GameRepository gameRepository;
+    private final WordProvider wordProvider;
+
+    @Autowired
+    public GameService(final GameRepository gameRepository, final WordProvider wordProvider) {
+        this.wordProvider = wordProvider;
+        this.gameRepository = gameRepository;
+    }
+
+    public Game getGameByPlayerName(final String playerName) {
+        Optional<Game> game = gameRepository.getByPlayerName(playerName);
+        Validate.isTrue(game.isPresent(), String.format("Game is missing by player name %s", playerName));
+
+        return game.get();
+    }
+
+    public List<Game> findActiveGames() {
+        return gameRepository.findActiveGames();
+    }
+
+    public Game create(final String playerName) {
+        Optional<Game> existingGame = gameRepository.getByPlayerName(playerName);
+        Validate.isTrue(!existingGame.isPresent(), String.format("Game already exists by player name %s", playerName));
+        String word = wordProvider.getWord();
+        Game newGame = new Game(playerName, word);
+        gameRepository.save(newGame);
+        return newGame;
+    }
+}

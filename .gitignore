@@ -1,0 +1,7 @@
+.idea
+dist
+*.iml
+Hangman.war
+TEST*.xml
+build
+out
