@@ -6,8 +6,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
+@EnableWebMvc
 @ComponentScan("alfredeperjesi.game.hangman")
 @PropertySource("classpath:hangman.properties")
 public class HangmanConfig {
@@ -24,12 +26,12 @@ public class HangmanConfig {
         return props;
     }
 
-    @Bean
+    @Bean(name = "repositoryFolder")
     public String repositoryFolder() {
         return repositoryFileFolder;
     }
 
-    @Bean
+    @Bean(name = "wordFileName")
     public String wordFileName() {
         return wordFileName;
     }

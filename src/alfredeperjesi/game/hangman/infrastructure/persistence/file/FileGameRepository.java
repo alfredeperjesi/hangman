@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +34,7 @@ public class FileGameRepository implements GameRepository {
     private String repositoryFolder;
 
     @Autowired
-    public FileGameRepository(final String repositoryFolder) {
+    public FileGameRepository(@Qualifier("repositoryFolder") final String repositoryFolder) {
         try {
             FileUtils.forceMkdir(new File(repositoryFolder));
         } catch (Exception e) {

@@ -1,7 +1,5 @@
 package alfredeperjesi.game.hangman.infrastructure.presentation.rest;
 
-import alfredeperjesi.game.hangman.Fixtures;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,7 +19,7 @@ public class GameResourceAssemblerTest {
     public void assembleAssemblesTheProperResource() {
         GameResource gameResource = gameResourceAssembler.assemble(GAME);
 
-        assertThat(gameResource.actualWord(), equalTo(GAME.actualWord()));
-        assertThat(gameResource.missedLetterCount(), equalTo(GAME.missedLetterCount()));
+        assertThat(gameResource.getActualWord(), equalTo(GAME.actualWord()));
+        assertThat(gameResource.getMissedLetterCount(), equalTo(GAME.missedLetterCount()));
     }
 }

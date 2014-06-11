@@ -3,6 +3,7 @@ package alfredeperjesi.game.hangman.infrastructure.persistence.file;
 import alfredeperjesi.game.hangman.application.WordProvider;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
@@ -16,7 +17,7 @@ public class FileWordProvider implements WordProvider {
     private SecureRandom secureRandom;
 
     @Autowired
-    public FileWordProvider(final String wordFileName) {
+    public FileWordProvider(@Qualifier("wordFileName") final String wordFileName) {
         try {
             words = IOUtils.readLines(getClass().getClassLoader().getResourceAsStream(wordFileName));
         } catch (Exception e) {

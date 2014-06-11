@@ -61,7 +61,7 @@
 	</target>
 
     <target name="build-war" depends="junit">
-        <war destfile="hangman.war" needxmlfile="false">
+        <war destfile="hangman.war" webxml="webapp/WEB-INF/web.xml">
             <fileset dir="${web.dir}">
                 <include name="**/*.*"/>
             </fileset>
