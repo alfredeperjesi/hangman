@@ -19,7 +19,7 @@ public class FileWordProvider implements WordProvider {
     public FileWordProvider(final String wordFileName) {
         try {
             words = IOUtils.readLines(getClass().getClassLoader().getResourceAsStream(wordFileName));
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(String.format("Failed to load word file %s", wordFileName), e);
         }
         secureRandom = new SecureRandom();

@@ -1,12 +1,13 @@
 package alfredeperjesi.game.hangman.domain;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
+import java.io.File;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Game {
+public class Game implements Serializable {
     public static final int MAX_MISSED_LETTERS_COUNT = 6;
 
     private final String playerName;
@@ -23,7 +24,7 @@ public class Game {
         this.word = word;
         guessedLetters = new HashSet<>();
         missedLetters = new HashSet<>();
-        actualWord = StringUtils.leftPad("", word.length(), "_");
+        actualWord = org.apache.commons.lang3.StringUtils.leftPad("", word.length(), "_");
     }
 
     public void guess(Character guess) {
@@ -33,7 +34,7 @@ public class Game {
         if (word.contains(String.valueOf(guess))) {
             for (int i = 0; i < word.length(); i++) {
                 if (word.charAt(i) == guess.charValue()) {
-                    actualWord = actualWord.substring(0, i) + guess + actualWord.substring(i + 1);
+                    actualWord = String.format("%s%s%s", actualWord.substring(0, i), guess, actualWord.substring(i + 1));
                 }
             }
         } else {
@@ -48,6 +49,14 @@ public class Game {
 
     public int missedLetterCount() {
         return missedLetters.size();
+    }
+
+    public String playerName() {
+        return playerName;
+    }
+
+    public boolean isActive() {
+        return missedLetterCount() < MAX_MISSED_LETTERS_COUNT;
     }
 
     // GENERATED CODE
