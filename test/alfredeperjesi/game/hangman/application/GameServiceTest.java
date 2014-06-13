@@ -16,12 +16,15 @@ import java.util.List;
 import static alfredeperjesi.game.hangman.Fixtures.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GameServiceTest {
     public static final String MISSING_PLAYER_NAME = "missing";
     public static final Optional<Game> ABSENT_GAME = Optional.absent();
+    public static final char EXISTING_LETTER_UPPER = 'C';
+    public static final char MISSING_LETTER = 'a';
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -32,29 +35,14 @@ public class GameServiceTest {
     @Mock
     private WordProvider wordProvider;
 
+    private Game initialGame;
+
     private GameService gameService;
 
     @Before
     public void setUp() {
+        initialGame = new Game(PLAYER_NAME, WORD);
         gameService = new GameService(gameRepository, wordProvider);
-    }
-
-    @Test
-    public void getByIdThrowsIllegalArgumentExceptionWhenGameIsMissingForId() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Game is missing by player name missing");
-        when(gameRepository.getByPlayerName(MISSING_PLAYER_NAME)).thenReturn(ABSENT_GAME);
-
-        gameService.getGameByPlayerName(MISSING_PLAYER_NAME);
-    }
-
-    @Test
-    public void getByIdReturnsWithTheGameWhenGameExistsForId() {
-        when(gameRepository.getByPlayerName(MISSING_PLAYER_NAME)).thenReturn(Optional.of(GAME));
-
-        Game game = gameService.getGameByPlayerName(MISSING_PLAYER_NAME);
-
-        assertThat(game, equalTo(GAME));
     }
 
     @Test
@@ -67,22 +55,72 @@ public class GameServiceTest {
     }
 
     @Test
-    public void createThrowsIllegalArgumentExceptionWhenGameExistsByPlayerName() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Game already exists by player name player");
-
-        when(gameRepository.getByPlayerName(PLAYER_NAME)).thenReturn(Optional.of(GAME));
-
-        gameService.create(PLAYER_NAME);
-    }
-
-    @Test
     public void createCreatesAndPersistTheGameWhenGameDoesNotExistByPlayerName() {
-        when(gameRepository.getByPlayerName(PLAYER_NAME)).thenReturn(ABSENT_GAME);
         when(wordProvider.getWord()).thenReturn(WORD);
 
         Game game = gameService.create(PLAYER_NAME);
 
-        assertThat(game, equalTo(GAME));
+        verify(gameRepository).save(game);
+        assertThat(game, equalTo(game));
+    }
+
+    @Test
+    public void guessThrowsIllegalArgumentExceptionWhenGameIsMissingForId() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Game does not exist by player name missing");
+        when(gameRepository.getByPlayerName(MISSING_PLAYER_NAME)).thenReturn(ABSENT_GAME);
+
+        gameService.guess(MISSING_PLAYER_NAME, EXISTING_LETTER_LOWER);
+    }
+
+    @Test
+    public void guessIncreasesTheMissedLetterCountAndDoesNotChangeTheActualWordWhenGameExistsForIdAndLetterIsWrong() {
+        when(gameRepository.getByPlayerName(PLAYER_NAME)).thenReturn(Optional.of(initialGame));
+
+        Game game = gameService.guess(PLAYER_NAME, MISSING_LETTER);
+
+        verify(gameRepository).save(game);
+        assertThat(game.actualWord(), equalTo("__________"));
+        assertThat(game.missedLetterCount(), equalTo(1));
+    }
+
+    @Test
+    public void guessDoesNotIncreaseTheMissedLetterCountAndChangeTheActualWordWhenGameExistsForIdAndLetterIsGoodInLowerCase() {
+        when(gameRepository.getByPlayerName(PLAYER_NAME)).thenReturn(Optional.of(initialGame));
+
+        Game game = gameService.guess(PLAYER_NAME, EXISTING_LETTER_LOWER);
+
+        verify(gameRepository).save(game);
+        assertThat(game.actualWord(), equalTo("__c_______"));
+        assertThat(game.missedLetterCount(), equalTo(0));
+    }
+
+    @Test
+    public void guessDoesNotIncreaseTheMissedLetterCountAndChangeTheActualWordWhenGameExistsForIdAndLetterIsGoodInUpperCase() {
+        when(gameRepository.getByPlayerName(PLAYER_NAME)).thenReturn(Optional.of(initialGame));
+
+        Game game = gameService.guess(PLAYER_NAME, EXISTING_LETTER_UPPER);
+
+        verify(gameRepository).save(game);
+        assertThat(game.actualWord(), equalTo("__c_______"));
+        assertThat(game.missedLetterCount(), equalTo(0));
+    }
+
+    @Test
+    public void getThrowsIllegalArgumentExceptionWhenGameIsMissingForId() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Game does not exist by player name missing");
+        when(gameRepository.getByPlayerName(MISSING_PLAYER_NAME)).thenReturn(ABSENT_GAME);
+
+        gameService.get(MISSING_PLAYER_NAME);
+    }
+
+    @Test
+    public void getReturnsWithGameWhenGameExistsForId() {
+        when(gameRepository.getByPlayerName(PLAYER_NAME)).thenReturn(Optional.of(initialGame));
+
+        Game game = gameService.get(PLAYER_NAME);
+
+        assertThat(game, equalTo(initialGame));
     }
 }

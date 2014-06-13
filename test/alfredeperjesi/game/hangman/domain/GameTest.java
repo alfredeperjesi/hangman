@@ -94,7 +94,25 @@ public class GameTest {
     }
 
     @Test
-    public void guessThrowsIllegalStateExceptionWhenTheMissedLettersAreSix() {
+    public void guessSetsTheActualWordToTheWordWhenTheMissedLettersAreTheMaximum() {
+        game.guess('a');
+        game.guess('b');
+        game.guess('f');
+        game.guess('g');
+        game.guess('h');
+        game.guess('i');
+        game.guess('j');
+        game.guess('k');
+        game.guess('l');
+
+        game.guess('m');
+
+        assertThat(game.missedLetterCount(), equalTo(10));
+        assertThat(game.actualWord(), equalTo(WORD));
+    }
+
+    @Test
+    public void guessThrowsIllegalStateExceptionWhenTheMissedLettersAreMoreThanTheMaximum() {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("The game has already lost. Word is secretword.");
 
@@ -104,8 +122,12 @@ public class GameTest {
         game.guess('g');
         game.guess('h');
         game.guess('i');
-
         game.guess('j');
+        game.guess('k');
+        game.guess('l');
+        game.guess('m');
+
+        game.guess('n');
     }
 
 }

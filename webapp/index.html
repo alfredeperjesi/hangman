@@ -13,6 +13,7 @@
     <meta http-equiv="pragma" content="no-cache"/>
 
     <script type="text/javascript" src="js/frameworks/jquery-1.11.0.js"></script>
+    <script type="text/javascript" src="js/frameworks/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/frameworks/json2.js"></script>
     <script type="text/javascript" src="js/hangman/hangman.js"></script>
 
@@ -31,16 +32,36 @@
                     <tr>
                         <td>Player name</td>
                         <td><input id='playerName' type='text'></td>
+                        <td>Guess letter</td>
+                        <td><input id='guessLetter' type='text'></td>
+                    </tr>
+                    <tr>
+                        <td>Actual word</td>
+                        <td><input id='actualWord' type='text' disabled="disabled"></td>
+                        <td>Missed letters</td>
+                        <td><input id='missedLetters' type='text' disabled="disabled"></td>
+                        <td>Missed letter count</td>
+                        <td><input id='missedLetterCount' type='text' disabled="disabled"></td>
                     </tr>
                     <tr>
                         <td colspan="3" align="center" style="padding-top: 20">
-                            Operations
+                            <img id='image' src="images/hang0.gif">
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3" align='center'>
-                            <button type='button' onClick='createGame();'>
+                            <button type='button' id='createGame' onClick='createGame();'>
                                 Create game
+                            </button>
+                        </td>
+                        <td colspan="3" align='center'>
+                            <button type='button' id='guess' onClick='guessLetter();'>
+                                Guess
+                            </button>
+                        </td>
+                        <td colspan="3" align='center'>
+                            <button type='button' id='management' onClick='gotoManagement();'>
+                                Management
                             </button>
                         </td>
                     </tr>

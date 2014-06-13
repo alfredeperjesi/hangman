@@ -20,23 +20,29 @@ public class GameService {
         this.gameRepository = gameRepository;
     }
 
-    public Game getGameByPlayerName(final String playerName) {
-        Optional<Game> game = gameRepository.getByPlayerName(playerName);
-        Validate.isTrue(game.isPresent(), String.format("Game is missing by player name %s", playerName));
-
-        return game.get();
-    }
-
     public List<Game> findActiveGames() {
         return gameRepository.findActiveGames();
     }
 
-    public Game create(final String playerName) {
+    public Game get(final String playerName) {
         Optional<Game> existingGame = gameRepository.getByPlayerName(playerName);
-        Validate.isTrue(!existingGame.isPresent(), String.format("Game already exists by player name %s", playerName));
+        Validate.isTrue(existingGame.isPresent(), String.format("Game does not exist by player name %s", playerName));
+        return existingGame.get();
+    }
+
+    public Game create(final String playerName) {
         String word = wordProvider.getWord();
         Game newGame = new Game(playerName, word);
         gameRepository.save(newGame);
         return newGame;
+    }
+
+    public Game guess(String playerName, Character guessedLetter) {
+        Optional<Game> existingGame = gameRepository.getByPlayerName(playerName);
+        Validate.isTrue(existingGame.isPresent(), String.format("Game does not exist by player name %s", playerName));
+        Game game = existingGame.get();
+        game.guess(guessedLetter);
+        gameRepository.save(game);
+        return game;
     }
 }
